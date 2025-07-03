@@ -1,0 +1,50 @@
+{
+  "happy": [
+    {
+      "name": "Can't Stop The Feeling",
+      "artist": "Justin Timberlake",
+      "url": "https://www.youtube.com/watch?v=ru0K8uYEZWw"
+    },
+    {
+      "name": "Good Life",
+      "artist": "OneRepublic",
+      "url": "https://www.youtube.com/watch?v=jZhQOvvV45w"
+    }
+  ],
+  "sad": [
+    {
+      "name": "Rise Up",
+      "artist": "Andra Day",
+      "url": "https://www.youtube.com/watch?v=lwgr_IMeEgA"
+    },
+    {
+      "name": "Don't Give Up",
+      "artist": "Motivational Track",
+      "url": "https://www.youtube.com/watch?v=mgmVOuLgFB0"
+    }
+  ],
+  "relaxed": [
+    {
+      "name": "Weightless",
+      "artist": "Marconi Union",
+      "url": "https://www.youtube.com/watch?v=UfcAVejslrU"
+    },
+    {
+      "name": "Clair de Lune",
+      "artist": "Debussy",
+      "url": "https://www.youtube.com/watch?v=CvFH_6DNRCY"
+    }
+  ],
+  "energetic": [
+    {
+      "name": "Believer",
+      "artist": "Imagine Dragons",
+      "url": "https://www.youtube.com/watch?v=7wtfhZwyrcc"
+    },
+    {
+      "name": "Stronger",
+      "artist": "Kanye West",
+      "url": "https://www.youtube.com/watch?v=PsO6ZnUZI0g"
+    }
+  ]
+}
