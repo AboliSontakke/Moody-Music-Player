@@ -1,13 +1,13 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import requests
+import os
 
 app = Flask(__name__)
 CORS(app)
 
 YOUTUBE_API_KEY = "AIzaSyCkvi0DP_tygwrDMGY4RgF6o86qZs_S0X4"  # Replace with your actual key
 
-# Define mood keywords
 MOOD_KEYWORDS = {
     "happy": "happy",
     "sad": "uplifting",  # positive instead of sad
@@ -15,7 +15,6 @@ MOOD_KEYWORDS = {
     "energetic": "workout dance"
 }
 
-# Add regional mapping
 LANGUAGE_QUERIES = {
     "hindi": "bollywood",
     "english": "english",
@@ -34,8 +33,6 @@ def get_songs():
 
     mood_part = MOOD_KEYWORDS.get(mood, "popular")
     lang_part = LANGUAGE_QUERIES.get(language, "bollywood")
-
-    # Build final query like "marathi happy songs"
     query = f"{lang_part} {mood_part} songs"
 
     youtube_api_url = (
@@ -65,6 +62,7 @@ def get_songs():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-
+# ✅ Render-friendly host + port
 if __name__ == "__main__":
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port, debug=True)
