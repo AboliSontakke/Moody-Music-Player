@@ -1,2 +1,1 @@
-flask
-
+Flask-CORS==3.1.1
