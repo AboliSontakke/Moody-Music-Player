@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, render_template, request, jsonify
 from flask_cors import CORS
 import requests
 import os
@@ -6,11 +6,11 @@ import os
 app = Flask(__name__)
 CORS(app)
 
-YOUTUBE_API_KEY = "AIzaSyCkvi0DP_tygwrDMGY4RgF6o86qZs_S0X4"  # Replace with your actual key
+YOUTUBE_API_KEY = "AIzaSyCkvi0DP_tygwrDMGY4RgF6o86qZs_S0X4"
 
 MOOD_KEYWORDS = {
     "happy": "happy",
-    "sad": "uplifting",  # positive instead of sad
+    "sad": "uplifting",
     "relaxed": "relaxing chill",
     "energetic": "workout dance"
 }
@@ -23,7 +23,7 @@ LANGUAGE_QUERIES = {
 
 @app.route("/")
 def home():
-    return "🎵 Welcome to the Mood-Based YouTube Music API!"
+    return render_template("index.html")
 
 @app.route("/get-songs", methods=["POST"])
 def get_songs():
@@ -43,26 +43,24 @@ def get_songs():
     try:
         res = requests.get(youtube_api_url)
         data = res.json()
-
         songs = []
+
         for item in data.get("items", []):
             video_id = item["id"]["videoId"]
             title = item["snippet"]["title"]
             channel = item["snippet"]["channelTitle"]
-            url = f"https://www.youtube.com/watch?v={video_id}"
 
             songs.append({
                 "name": title,
                 "artist": channel,
-                "url": url
+                "video_id": video_id
             })
 
         return jsonify({"songs": songs})
-
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-# ✅ Render-friendly host + port
+
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port, debug=True)
