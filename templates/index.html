@@ -284,6 +284,100 @@ body.light .song-card {
   <h2>Favorites</h2>
   <div class="favorites-list" id="favorites"></div>
 </div>
+<!-- Add after Favorites section -->
+<h2>Playlist</h2>
+<div class="playlist-list" id="playlist"></div>
+
+<script>
+// PLAYLIST SETUP
+const playlist = [];
+
+function addToPlaylist(card){
+  if(!playlist.includes(card.dataset.id)){
+    playlist.push(card.dataset.id);
+    renderPlaylist();
+  }
+}
+
+function renderPlaylist(){
+  const pl = document.getElementById("playlist");
+  pl.innerHTML = "";
+  playlist.forEach(id=>{
+    const card = document.querySelector(`[data-id='${id}']`).cloneNode(true);
+    card.querySelector(".play-btn").addEventListener("click", ()=>playSong(card.dataset.id, card.dataset.title, card.dataset.artist, card.dataset.thumb));
+    card.querySelector(".heart").addEventListener("click", ()=>toggleFavorite(card, card.dataset.id));
+    pl.appendChild(card);
+  });
+}
+
+// Modify song fetch to include "Add to Playlist" button
+document.getElementById("getSongsBtn").addEventListener("click", async ()=>{
+  const mood = document.getElementById("mood").value;
+  const language = document.getElementById("language").value;
+  const response = await fetch("/get-songs", {
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body: JSON.stringify({mood, language})
+  });
+  const data = await response.json();
+  const songListDiv = document.getElementById("songList");
+  songListDiv.innerHTML="";
+  const quotes = {
+    happy: "Keep smiling, life is beautiful! 😊",
+    sad: "Better days are coming....Never Give Up!!🌈",
+    relaxed: "Peace begins with a breath 🌿",
+    energetic: "You are unstoppable! ⚡"
+  };
+  document.getElementById("quote").innerText = quotes[mood] || "";
+
+  if(data.songs && data.songs.length>0){
+    data.songs.forEach(song=>{
+      const card = document.createElement("div");
+      card.className="song-card";
+      card.dataset.id=song.video_id;
+      card.dataset.title=song.name;
+      card.dataset.artist=song.artist;
+      card.dataset.thumb=`https://img.youtube.com/vi/${song.video_id}/hqdefault.jpg`;
+      card.innerHTML=`
+        <img src="${card.dataset.thumb}" alt="${song.name}">
+        <div class="info">${song.name}</div>
+        <div class="subinfo">${song.artist}</div>
+        <div class="actions">
+          <button class="play-btn">Play</button>
+          <span class="heart">&#10084;</span>
+          <button class="add-playlist">➕ Playlist</button>
+        </div>`;
+      card.querySelector(".play-btn").addEventListener("click", ()=>playSong(song.video_id, song.name, song.artist, card.dataset.thumb));
+      card.querySelector(".heart").addEventListener("click", ()=>toggleFavorite(card, song.video_id));
+      card.querySelector(".add-playlist").addEventListener("click", ()=>addToPlaylist(card));
+      songListDiv.appendChild(card);
+    });
+  } else songListDiv.innerHTML="<p>No songs found.</p>";
+});
+
+// VOICE COMMAND FEATURE
+const voiceBtn = document.createElement("button");
+voiceBtn.innerText = "🎤 Voice Command";
+voiceBtn.style.marginLeft = "10px";
+document.querySelector(".controls").appendChild(voiceBtn);
+
+voiceBtn.addEventListener("click", ()=>{
+  const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+  recognition.lang = 'en-US';
+  recognition.start();
+  recognition.onresult = (e)=>{
+    const command = e.results[0][0].transcript.toLowerCase();
+    document.getElementById("searchSong").value = command;
+    document.getElementById("searchSong").dispatchEvent(new Event("input"));
+    if(command.startsWith("play")){
+      const songName = command.replace("play ","");
+      const card = [...document.querySelectorAll(".song-card")].find(c=>c.dataset.title.toLowerCase().includes(songName));
+      if(card) playSong(card.dataset.id, card.dataset.title, card.dataset.artist, card.dataset.thumb);
+    } else if(command.includes("pause") && player) player.pauseVideo();
+    else if(command.includes("resume") && player) player.playVideo();
+  };
+});
+</script>
 
 <script>
 let player;
