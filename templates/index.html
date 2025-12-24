@@ -529,6 +529,79 @@ document.getElementById("searchSong").addEventListener("input", function(){
   });
 });
 </script>
+
+  <script>
+// --- PLAYLIST MANAGEMENT ---
+let playlist = [];       // store songs in playlist
+let currentPlaylistIndex = 0;
+
+// Add a song card to playlist
+function addToPlaylist(card){
+  const songId = card.dataset.id;
+  // prevent duplicates
+  if(!playlist.some(s => s.videoId === songId)){
+    const song = {
+      videoId: songId,
+      title: card.dataset.title,
+      artist: card.dataset.artist,
+      thumb: card.dataset.thumb
+    };
+    playlist.push(song);
+    renderPlaylist();
+  }
+}
+
+// Remove song from playlist
+function removeFromPlaylist(videoId){
+  playlist = playlist.filter(s => s.videoId !== videoId);
+  renderPlaylist();
+}
+
+// Render playlist on the page
+function renderPlaylist(){
+  const pl = document.getElementById("playlist");
+  pl.innerHTML = "";
+  playlist.forEach(song => {
+    const card = document.createElement("div");
+    card.className = "song-card";
+    card.dataset.id = song.videoId;
+    card.dataset.title = song.title;
+    card.dataset.artist = song.artist;
+    card.dataset.thumb = song.thumb;
+    card.innerHTML = `
+      <img src="${song.thumb}" alt="${song.title}">
+      <div class="info">${song.title}</div>
+      <div class="subinfo">${song.artist}</div>
+      <div class="actions">
+        <button class="play-btn">Play</button>
+        <button class="remove-playlist">Remove</button>
+      </div>
+    `;
+    // Play button
+    card.querySelector(".play-btn").addEventListener("click", ()=>playSong(song.videoId, song.title, song.artist, song.thumb));
+    // Remove button
+    card.querySelector(".remove-playlist").addEventListener("click", ()=>removeFromPlaylist(song.videoId));
+    pl.appendChild(card);
+  });
+}
+
+// Optional: play next in playlist automatically when current ends
+function playNextInPlaylist(){
+  if(playlist.length === 0) return;
+  currentPlaylistIndex = (currentPlaylistIndex + 1) % playlist.length;
+  const nextSong = playlist[currentPlaylistIndex];
+  playSong(nextSong.videoId, nextSong.title, nextSong.artist, nextSong.thumb);
+}
+
+// Modify playSong function to auto-play next
+function onPlayerStateChange(event){
+  const playPauseBtn = document.getElementById("playPauseBtn");
+  if(event.data === YT.PlayerState.PLAYING) playPauseBtn.innerText="Pause";
+  else if(event.data === YT.PlayerState.ENDED) playNextInPlaylist();
+  else playPauseBtn.innerText="Play";
+}
+</script>
+
 <script src="https://www.youtube.com/iframe_api"></script>
 </body>
 </html>
