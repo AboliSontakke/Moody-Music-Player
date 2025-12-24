@@ -231,15 +231,27 @@ function renderPlaylist(){
   });
 }
 
-// Search feature
-document.getElementById("searchSong").oninput = function(){
+// SEARCH FEATURE FOR SONG LIST AND PLAYLIST
+document.getElementById("searchSong").addEventListener("input", function(){
   const filter = this.value.toLowerCase();
-  document.querySelectorAll("#songList .song-card").forEach(song=>{
+
+  // Filter main song list
+  const songs = document.querySelectorAll("#songList .song-card");
+  songs.forEach(song=>{
     const title = song.dataset.title.toLowerCase();
     const artist = song.dataset.artist.toLowerCase();
     song.style.display = (title.includes(filter) || artist.includes(filter)) ? "flex" : "none";
   });
-}
+
+  // Filter playlist
+  const playlistCards = document.querySelectorAll("#playlist .song-card");
+  playlistCards.forEach(song=>{
+    const title = song.dataset.title.toLowerCase();
+    const artist = song.dataset.artist.toLowerCase();
+    song.style.display = (title.includes(filter) || artist.includes(filter)) ? "flex" : "none";
+  });
+});
+
 
 // Fetch songs
 document.getElementById("getSongsBtn").onclick = async ()=>{
